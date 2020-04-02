@@ -81,7 +81,7 @@ module.exports = {
   externals: {
     jquery: 'jquery',
     angular: 'angular',
-    formiojs: 'Formio',
+    formiojs: 'formiojs',
   },
   devtool: 'source-map',
   resolve: {
