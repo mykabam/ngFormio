@@ -364,7 +364,9 @@ const app = angular.module('formio');
           $scope.nowatch = false;
           return;
         }
-        $scope.onFormio.then(() => $scope.formio.submission = angular.copy(submission));
+        $scope.onFormio.then(() => {
+          angular.copy(submission, $scope.formio.submission);
+        });
       }, true);
 
       $scope.$on('change', function () {
