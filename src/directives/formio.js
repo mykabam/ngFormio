@@ -12,7 +12,8 @@ export default app.directive('formio', function() {
       readOnly: '=?',
       hideComponents: '=?',
       noSubmit: '=?',
-      options: '<?'
+      options: '<?',
+      generics: '=?'
     },
     link: function (scope, element) {
       scope.element = element[0];
@@ -54,6 +55,28 @@ export default app.directive('formio', function() {
           if ($scope.src || $scope.form) {
             $scope.initialized = true;
             Formio.createForm($scope.element, $scope.src || $scope.form, _.cloneDeep($scope.options)).then(formio => {
+              window.languages = {en: true};
+              window.setFormioLanguage = function(lang) {
+                if (languages[lang]) {
+                  return formio.language = lang;
+                }
+
+                Formio.fetch(`${formio.formio.projectUrl}/language/submission?data.language=${lang}&data.formApiName=${formio._form.path}`).then(function(resp) {
+                  return resp.json();
+                }).then(function(result) {
+                  if(result && result.length > 0) {
+                    languages[lang] = true;
+
+                    let translations = Object.assign({}, $scope.generics[lang] || {}, result[0].data.translations);
+
+                    formio.addLanguage(lang, translations);
+                    formio.language = lang;
+                  } else {
+                    formio.language = 'en';
+                  }
+                });
+              }
+
               formio.nosubmit = $scope.noSubmit;
               $scope.$emit('formLoad', formio.wizard ? formio.wizard : formio.form);
               $scope.formio = formio;
