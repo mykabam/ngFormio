@@ -250,6 +250,28 @@ const app = angular.module('formio');
         if ($scope.src || $scope.form) {
           $scope.initialized = true;
           formiojs__WEBPACK_IMPORTED_MODULE_0__["Formio"].createForm($scope.element, $scope.src || $scope.form, _.cloneDeep($scope.options)).then(formio => {
+            window.languages = { en: true };
+            window.setFormioLanguage = function (lang, generics) {
+              if (languages[lang]) {
+                return formio.language = lang;
+              }
+
+              formiojs__WEBPACK_IMPORTED_MODULE_0__["Formio"].fetch(`${formio.formio.projectUrl}/language/submission?data.language=${lang}&data.formApiName=${formio._form.path}`).then(function (resp) {
+                return resp.json();
+              }).then(function (result) {
+                if (result && result.length > 0) {
+                  languages[lang] = true;
+
+                  let translations = Object.assign({}, generics || {}, result[0].data.translations);
+
+                  formio.addLanguage(lang, translations);
+                  formio.language = lang;
+                } else {
+                  formio.language = 'en';
+                }
+              });
+            };
+
             formio.nosubmit = $scope.noSubmit;
             $scope.$emit('formLoad', formio.wizard ? formio.wizard : formio.form);
             $scope.formio = formio;
@@ -704,7 +726,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var formiojs_dist_formio_full_min_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! formiojs/dist/formio.full.min.css */ "./node_modules/formiojs/dist/formio.full.min.css");
 /* harmony import */ var formiojs_dist_formio_full_min_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(formiojs_dist_formio_full_min_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _modules__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules */ "./lib/modules.js");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _modules__WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _modules__WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _modules__WEBPACK_IMPORTED_MODULE_1__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _modules__WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 
 
 
@@ -739,7 +761,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _factories__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./factories */ "./lib/factories/index.js");
 /* harmony import */ var formiojs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! formiojs */ "formiojs");
 /* harmony import */ var formiojs__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(formiojs__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in formiojs__WEBPACK_IMPORTED_MODULE_5__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return formiojs__WEBPACK_IMPORTED_MODULE_5__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in formiojs__WEBPACK_IMPORTED_MODULE_5__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return formiojs__WEBPACK_IMPORTED_MODULE_5__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 
 
 
