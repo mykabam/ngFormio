@@ -27,7 +27,7 @@ export default app.directive('formio', function() {
       function ($scope, $q) {
         $scope.onLoad = $q.defer();
         $scope.onFormio = $scope.onLoad.promise;
-        $scope.initializeForm = function() {
+        $scope.initializeForm = async function() {
           if (!$scope.element) {
             return;
           }
@@ -51,29 +51,44 @@ export default app.directive('formio', function() {
             $scope.src += 'live=1';
           }
 
+          $scope.getResoruceTranslations = async (lang) => {
+            const src = (new URL($scope.src));
+            let result = await Formio.fetch(`${src.origin}/language/submission?data.language=${lang}&data.formApiName=${src.pathname.replace('/', '')}`).then(function(resp) {
+              return resp.json();
+            });
+
+            return result[0].data.translations || {};
+          }
+
           if ($scope.src || $scope.form) {
             $scope.initialized = true;
-            Formio.createForm($scope.element, $scope.src || $scope.form, _.cloneDeep($scope.options)).then(formio => {
+            
+            // load translations
+            if($scope.options && $scope.options.language && $scope.options.language != 'en') {
+              let resourceTranslations = await $scope.getResoruceTranslations($scope.options.language);
+              $scope.options.i18n[$scope.options.language] = Object.assign({}, $scope.options.i18n[$scope.options.language], resourceTranslations);
+              console.log($scope.options.i18n[$scope.options.language]);
+            }
+
+            Formio.createForm($scope.element, $scope.src || $scope.form, _.cloneDeep($scope.options)).then(async (formio) => {
               window.languages = {en: true};
-              window.setFormioLanguage = function(lang, generics) {
+
+              window.setFormioLanguage = async function(lang, generics) {
                 if (languages[lang]) {
                   return formio.language = lang;
                 }
 
-                Formio.fetch(`${formio.formio.projectUrl}/language/submission?data.language=${lang}&data.formApiName=${formio._form.path}`).then(function(resp) {
-                  return resp.json();
-                }).then(function(result) {
-                  if(result && result.length > 0) {
-                    languages[lang] = true;
+                languages[lang] = true;
 
-                    let translations = Object.assign({}, generics || {}, result[0].data.translations);
+                let resourceTranslations = await $scope.getResoruceTranslations($scope.options.language);
+                let translations = $scope.options.i18n[$scope.options.language] = Object.assign({}, generics, resourceTranslations);
 
-                    formio.addLanguage(lang, translations);
-                    formio.language = lang;
-                  } else {
-                    formio.language = 'en';
-                  }
-                });
+                if(Object.entries(translations).length === 0) {
+                  formio.language = 'en';
+                } else {
+                  formio.addLanguage(lang, translations);
+                  formio.language = lang;
+                }
               }
 
               formio.nosubmit = $scope.noSubmit;
