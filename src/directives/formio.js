@@ -57,12 +57,12 @@ export default app.directive('formio', function() {
               return resp.json();
             });
 
-            return result[0].data.translations || {};
+            return result[0]?.data?.translations || {};
           }
 
           if ($scope.src || $scope.form) {
             $scope.initialized = true;
-            
+
             // load translations
             if($scope.options && $scope.options.language && $scope.options.language != 'en') {
               let resourceTranslations = await $scope.getResoruceTranslations($scope.options.language);
