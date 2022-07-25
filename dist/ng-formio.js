@@ -331,6 +331,8 @@ var _default = app.directive('formio', function () {
 
                 $scope.getResoruceTranslations = /*#__PURE__*/function () {
                   var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(lang) {
+                    var _result$, _result$$data;
+
                     var src, result;
                     return _regeneratorRuntime().wrap(function _callee$(_context) {
                       while (1) {
@@ -344,7 +346,7 @@ var _default = app.directive('formio', function () {
 
                           case 3:
                             result = _context.sent;
-                            return _context.abrupt("return", result[0].data.translations || {});
+                            return _context.abrupt("return", ((_result$ = result[0]) === null || _result$ === void 0 ? void 0 : (_result$$data = _result$.data) === null || _result$$data === void 0 ? void 0 : _result$$data.translations) || {});
 
                           case 5:
                           case "end":
