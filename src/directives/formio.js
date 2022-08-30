@@ -51,9 +51,17 @@ export default app.directive('formio', function() {
             $scope.src += 'live=1';
           }
 
-          $scope.getResoruceTranslations = async (lang) => {
-            const src = (new URL($scope.src));
-            let result = await Formio.fetch(`${src.origin}/language/submission?data.language=${lang}&data.formApiName=${src.pathname.replace('/', '')}`).then(function(resp) {
+          $scope.getResoruceTranslations = async (lang, templateName = null) => {
+            const src = (new URL($scope.src)),
+            url = `${src.origin}/language/submission?data.language=${lang}`;
+
+            if(null == templateName) {
+              url += `&data.formApiName=${src.pathname.replace('/', '')}`;
+            } else {
+              url += `&data.formTemplateName=${templateName}`;
+            }
+
+            let result = await Formio.fetch(url).then(function(resp) {
               return resp.json();
             });
 
@@ -63,24 +71,19 @@ export default app.directive('formio', function() {
           if ($scope.src || $scope.form) {
             $scope.initialized = true;
 
-            // load translations
-            if($scope.options && $scope.options.language && $scope.options.language != 'en') {
-              let resourceTranslations = await $scope.getResoruceTranslations($scope.options.language);
-              $scope.options.i18n[$scope.options.language] = Object.assign({}, $scope.options.i18n[$scope.options.language], resourceTranslations);
-              console.log($scope.options.i18n[$scope.options.language]);
-            }
-
             Formio.createForm($scope.element, $scope.src || $scope.form, _.cloneDeep($scope.options)).then(async (formio) => {
               window.languages = {en: true};
+
+              if($scope.options && $scope.options.language && $scope.options.language != 'en') {
+                setFormioLanguage($scope.options.language, $scope.options.i18n[$scope.options.language]);
+              }
 
               window.setFormioLanguage = async function(lang, generics) {
                 if (languages[lang]) {
                   return formio.language = lang;
                 }
 
-                languages[lang] = true;
-
-                let resourceTranslations = await $scope.getResoruceTranslations($scope.options.language);
+                let resourceTranslations = await $scope.getResoruceTranslations($scope.options.language, formio.options.properties.template || null);
                 let translations = $scope.options.i18n[$scope.options.language] = Object.assign({}, generics, resourceTranslations);
 
                 if(Object.entries(translations).length === 0) {
@@ -88,6 +91,7 @@ export default app.directive('formio', function() {
                 } else {
                   formio.addLanguage(lang, translations);
                   formio.language = lang;
+                  languages[lang] = true;
                 }
               }
 
