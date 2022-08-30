@@ -1,6 +1,6 @@
 {
   "name": "@mykabam/ng-formio",
-  "version": "4.14.0",
+  "version": "4.14.1",
   "description": "The form redering engine behind Form.IO.",
   "main": "dist/ng-formio.js",
   "scripts": {
@@ -15,6 +15,7 @@
   "peerDependencies": {
     "angular": "^1.7.8"
   },
+  "repository": "https://github.com/mykabam/ngFormio.git",
   "devDependencies": {
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
