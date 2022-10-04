@@ -52,8 +52,8 @@ export default app.directive('formio', function() {
           }
 
           $scope.getResoruceTranslations = async (lang, templateName = null) => {
-            const src = (new URL($scope.src)),
-            url = `${src.origin}/language/submission?data.language=${lang}`;
+            const src = (new URL($scope.src));
+            let url = `${src.origin}/language/submission?data.language=${lang}`;
 
             if(null == templateName) {
               url += `&data.formApiName=${src.pathname.replace('/', '')}`;
