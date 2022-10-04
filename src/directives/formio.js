@@ -74,10 +74,6 @@ export default app.directive('formio', function() {
             Formio.createForm($scope.element, $scope.src || $scope.form, _.cloneDeep($scope.options)).then(async (formio) => {
               window.languages = {en: true};
 
-              if($scope.options && $scope.options.language && $scope.options.language != 'en') {
-                setFormioLanguage($scope.options.language, $scope.options.i18n[$scope.options.language]);
-              }
-
               window.setFormioLanguage = async function(lang, generics) {
                 if (languages[lang]) {
                   return formio.language = lang;
@@ -93,6 +89,10 @@ export default app.directive('formio', function() {
                   formio.language = lang;
                   languages[lang] = true;
                 }
+              }
+
+              if($scope.options && $scope.options.language && $scope.options.language != 'en') {
+                window.setFormioLanguage($scope.options.language, $scope.options.i18n[$scope.options.language]);
               }
 
               formio.nosubmit = $scope.noSubmit;
