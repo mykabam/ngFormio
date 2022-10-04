@@ -387,10 +387,6 @@ var _default = app.directive('formio', function () {
                                 en: true
                               };
 
-                              if ($scope.options && $scope.options.language && $scope.options.language != 'en') {
-                                setFormioLanguage($scope.options.language, $scope.options.i18n[$scope.options.language]);
-                              }
-
                               window.setFormioLanguage = /*#__PURE__*/function () {
                                 var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(lang, generics) {
                                   var resourceTranslations, translations;
@@ -433,6 +429,10 @@ var _default = app.directive('formio', function () {
                                   return _ref4.apply(this, arguments);
                                 };
                               }();
+
+                              if ($scope.options && $scope.options.language && $scope.options.language != 'en') {
+                                window.setFormioLanguage($scope.options.language, $scope.options.i18n[$scope.options.language]);
+                              }
 
                               formio.nosubmit = $scope.noSubmit;
                               $scope.$emit('formLoad', formio.wizard ? formio.wizard : formio.form);
