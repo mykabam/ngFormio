@@ -284,20 +284,22 @@ var _default = app.directive('formio', function () {
       readOnly: '=?',
       hideComponents: '=?',
       noSubmit: '=?',
-      options: '<?'
+      options: '<?',
+      language: '=?',
+      i18n: '=?'
     },
     link: function link(scope, element) {
       scope.element = element[0];
       scope.formioReady = false;
       scope.initialized = false;
       scope.options = scope.options || {};
+      scope.i18n = scope.i18n || {};
       scope.noSubmit = !!scope.noSubmit;
     },
     controller: ['$scope', '$q', function ($scope, $q) {
       $scope.onLoad = $q.defer();
       $scope.onFormio = $scope.onLoad.promise;
       $scope.initializeForm = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-        var resourceTranslations;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
@@ -333,22 +335,35 @@ var _default = app.directive('formio', function () {
                   var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(lang) {
                     var _result$, _result$$data;
 
-                    var src, result;
+                    var templateName,
+                        src,
+                        url,
+                        result,
+                        _args = arguments;
                     return _regeneratorRuntime().wrap(function _callee$(_context) {
                       while (1) {
                         switch (_context.prev = _context.next) {
                           case 0:
+                            templateName = _args.length > 1 && _args[1] !== undefined ? _args[1] : null;
                             src = new URL($scope.src);
-                            _context.next = 3;
-                            return _formiojs.Formio.fetch("".concat(src.origin, "/language/submission?data.language=").concat(lang, "&data.formApiName=").concat(src.pathname.replace('/', ''))).then(function (resp) {
+                            url = "".concat(src.origin, "/language/submission?data.language=").concat(lang);
+
+                            if (null == templateName) {
+                              url += "&data.formApiName=".concat(src.pathname.replace('/', ''));
+                            } else {
+                              url += "&data.formTemplateName=".concat(templateName);
+                            }
+
+                            _context.next = 6;
+                            return _formiojs.Formio.fetch(url).then(function (resp) {
                               return resp.json();
                             });
 
-                          case 3:
+                          case 6:
                             result = _context.sent;
                             return _context.abrupt("return", ((_result$ = result[0]) === null || _result$ === void 0 ? void 0 : (_result$$data = _result$.data) === null || _result$$data === void 0 ? void 0 : _result$$data.translations) || {});
 
-                          case 5:
+                          case 8:
                           case "end":
                             return _context.stop();
                         }
@@ -361,99 +376,86 @@ var _default = app.directive('formio', function () {
                   };
                 }();
 
-                if (!($scope.src || $scope.form)) {
-                  _context4.next = 15;
-                  break;
-                }
+                if ($scope.src || $scope.form) {
+                  $scope.initialized = true;
 
-                $scope.initialized = true; // load translations
-
-                if (!($scope.options && $scope.options.language && $scope.options.language != 'en')) {
-                  _context4.next = 14;
-                  break;
-                }
-
-                _context4.next = 11;
-                return $scope.getResoruceTranslations($scope.options.language);
-
-              case 11:
-                resourceTranslations = _context4.sent;
-                $scope.options.i18n[$scope.options.language] = Object.assign({}, $scope.options.i18n[$scope.options.language], resourceTranslations);
-                console.log($scope.options.i18n[$scope.options.language]);
-
-              case 14:
-                _formiojs.Formio.createForm($scope.element, $scope.src || $scope.form, _.cloneDeep($scope.options)).then( /*#__PURE__*/function () {
-                  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(formio) {
-                    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-                      while (1) {
-                        switch (_context3.prev = _context3.next) {
-                          case 0:
-                            window.languages = {
-                              en: true
-                            };
-
-                            window.setFormioLanguage = /*#__PURE__*/function () {
-                              var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(lang, generics) {
-                                var resourceTranslations, translations;
-                                return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-                                  while (1) {
-                                    switch (_context2.prev = _context2.next) {
-                                      case 0:
-                                        if (!languages[lang]) {
-                                          _context2.next = 2;
-                                          break;
-                                        }
-
-                                        return _context2.abrupt("return", formio.language = lang);
-
-                                      case 2:
-                                        languages[lang] = true;
-                                        _context2.next = 5;
-                                        return $scope.getResoruceTranslations($scope.options.language);
-
-                                      case 5:
-                                        resourceTranslations = _context2.sent;
-                                        translations = $scope.options.i18n[$scope.options.language] = Object.assign({}, generics, resourceTranslations);
-
-                                        if (Object.entries(translations).length === 0) {
-                                          formio.language = 'en';
-                                        } else {
-                                          formio.addLanguage(lang, translations);
-                                          formio.language = lang;
-                                        }
-
-                                      case 8:
-                                      case "end":
-                                        return _context2.stop();
-                                    }
-                                  }
-                                }, _callee2);
-                              }));
-
-                              return function (_x3, _x4) {
-                                return _ref4.apply(this, arguments);
+                  _formiojs.Formio.createForm($scope.element, $scope.src || $scope.form, _.cloneDeep($scope.options)).then( /*#__PURE__*/function () {
+                    var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(formio) {
+                      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+                        while (1) {
+                          switch (_context3.prev = _context3.next) {
+                            case 0:
+                              window.languages = {
+                                en: true
                               };
-                            }();
 
-                            formio.nosubmit = $scope.noSubmit;
-                            $scope.$emit('formLoad', formio.wizard ? formio.wizard : formio.form);
-                            $scope.formio = formio;
-                            $scope.setupForm();
+                              window.setFormioLanguage = /*#__PURE__*/function () {
+                                var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(lang, generics) {
+                                  var resourceTranslations, translations;
+                                  return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+                                    while (1) {
+                                      switch (_context2.prev = _context2.next) {
+                                        case 0:
+                                          if (!languages[lang]) {
+                                            _context2.next = 2;
+                                            break;
+                                          }
 
-                          case 6:
-                          case "end":
-                            return _context3.stop();
+                                          return _context2.abrupt("return", formio.language = lang);
+
+                                        case 2:
+                                          _context2.next = 4;
+                                          return $scope.getResoruceTranslations($scope.language, formio.options.properties.template || null);
+
+                                        case 4:
+                                          resourceTranslations = _context2.sent;
+                                          translations = $scope.i18n[$scope.language] = Object.assign({}, generics, resourceTranslations);
+
+                                          if (Object.entries(translations).length === 0) {
+                                            formio.language = 'en';
+                                          } else {
+                                            formio.addLanguage(lang, translations);
+                                            formio.language = lang;
+                                            languages[lang] = true;
+                                          }
+
+                                        case 7:
+                                        case "end":
+                                          return _context2.stop();
+                                      }
+                                    }
+                                  }, _callee2);
+                                }));
+
+                                return function (_x3, _x4) {
+                                  return _ref4.apply(this, arguments);
+                                };
+                              }();
+
+                              if ($scope.language && $scope.language != 'en') {
+                                window.setFormioLanguage($scope.language, $scope.i18n[$scope.language]);
+                              }
+
+                              formio.nosubmit = $scope.noSubmit;
+                              $scope.$emit('formLoad', formio.wizard ? formio.wizard : formio.form);
+                              $scope.formio = formio;
+                              $scope.setupForm();
+
+                            case 7:
+                            case "end":
+                              return _context3.stop();
+                          }
                         }
-                      }
-                    }, _callee3);
-                  }));
+                      }, _callee3);
+                    }));
 
-                  return function (_x2) {
-                    return _ref3.apply(this, arguments);
-                  };
-                }());
+                    return function (_x2) {
+                      return _ref3.apply(this, arguments);
+                    };
+                  }());
+                }
 
-              case 15:
+              case 7:
               case "end":
                 return _context4.stop();
             }
