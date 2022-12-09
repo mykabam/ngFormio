@@ -96,9 +96,7 @@ export default app.directive('formio', function () {
                 }
               }
 
-              if ($scope.language && $scope.language != 'en') {
-                window.setFormioLanguage($scope.language, $scope.i18n[$scope.language]);
-              }
+              window.setFormioLanguage($scope.language, $scope.i18n[$scope.language]);
 
               formio.nosubmit = $scope.noSubmit;
               $scope.$emit('formLoad', formio.wizard ? formio.wizard : formio.form);
