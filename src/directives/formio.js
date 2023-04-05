@@ -71,10 +71,18 @@ export default app.directive('formio', function () {
             return result[0]?.data?.translations || {};
           }
 
+          $scope.isImgUrl = async (url) => {
+            const img = new Image();
+            img.src = url;
+            return await new Promise((resolve) => {
+              img.onerror = () => resolve(false);
+              img.onload = () => resolve(true);
+            });
+          }
+
           if ($scope.src || $scope.form) {
             $scope.initialized = true;
-
-            Formio.createForm($scope.element, $scope.src || $scope.form, _.cloneDeep($scope.options)).then(async (formio) => {
+            window.Formio.createForm($scope.element, $scope.src || $scope.form, _.cloneDeep($scope.options)).then(async (formio) => {
               window.languages = { en: true };
 
               window.setFormioLanguage = async function (lang, generics) {
@@ -99,6 +107,21 @@ export default app.directive('formio', function () {
               window.setFormioLanguage($scope.language, $scope.i18n[$scope.language]);
 
               formio.nosubmit = $scope.noSubmit;
+
+              formio.on('redraw', () => {
+                setTimeout(() => {
+                      let imgs = document.querySelectorAll('.formio-component.formio-component-file img'); 
+                      if (imgs.length) { 
+                        imgs.forEach((img, i) => {
+                          $scope.isImgUrl(img.src).then((status) => {
+                            if (!status) 
+                              img.src = '/images/file.png';
+                          })    
+                        });       
+                      }
+                }, 1000);
+              });
+
               $scope.$emit('formLoad', formio.wizard ? formio.wizard : formio.form);
               $scope.formio = formio;
               $scope.setupForm();
