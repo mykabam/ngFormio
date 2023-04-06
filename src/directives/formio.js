@@ -86,7 +86,8 @@ export default app.directive('formio', function () {
               window.languages = { en: true };
 
               window.setFormioLanguage = async function (lang, generics) {
-                $scope.$parent.$parent.vm.submission.data.currentLanguage = $scope.language;
+                // $scope.$parent.$parent.vm.submission.data.currentLanguage = $scope.language;
+                $scope.submission.data.currentLanguage = $scope.language;
 
                 if (languages[lang]) {
                   return formio.language = lang;
@@ -110,14 +111,14 @@ export default app.directive('formio', function () {
 
               formio.on('redraw', () => {
                 setTimeout(() => {
-                      let imgs = document.querySelectorAll('.formio-component.formio-component-file img'); 
-                      if (imgs.length) { 
+                      let imgs = document.querySelectorAll('.formio-component.formio-component-file img');
+                      if (imgs.length) {
                         imgs.forEach((img, i) => {
                           $scope.isImgUrl(img.src).then((status) => {
-                            if (!status) 
+                            if (!status)
                               img.src = '/images/file.png';
-                          })    
-                        });       
+                          })
+                        });
                       }
                 }, 1000);
               });
