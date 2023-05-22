@@ -93,7 +93,6 @@ export default app.directive('formio', function () {
                 }
 
                 $scope.getResoruceTranslations($scope.language, formio.options.properties.template || null).then((resourceTranslations) => {
-                  console.log('==========>', 'Resource Translations', resourceTranslations);
                   let translations = $scope.i18n[$scope.language] = Object.assign({}, generics, resourceTranslations);
 
                   if (Object.entries(translations).length === 0) {
