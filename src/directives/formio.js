@@ -30,7 +30,7 @@ export default app.directive('formio', function () {
       function ($scope, $q) {
         $scope.onLoad = $q.defer();
         $scope.onFormio = $scope.onLoad.promise;
-        $scope.initializeForm = async function () {
+        $scope.initializeForm = function () {
           if (!$scope.element) {
             return;
           }
@@ -54,7 +54,7 @@ export default app.directive('formio', function () {
             $scope.src += 'live=1';
           }
 
-          $scope.getResoruceTranslations = async (lang, templateName = null) => {
+          $scope.getResoruceTranslations = (lang, templateName = null) => {
             const src = (new URL($scope.src));
             let url = `${src.origin}/language/submission?data.language=${lang}`;
 
@@ -64,17 +64,16 @@ export default app.directive('formio', function () {
               url += `&data.formTemplateName=${templateName}`;
             }
 
-            let result = await Formio.fetch(url).then(function (resp) {
-              return resp.json();
+            return Formio.fetch(url).then(function (resp) {
+              const result = resp.json();
+              return (result[0] && result[0].data && result[0].data.translations) || {};
             });
-
-            return result[0]?.data?.translations || {};
           }
 
-          $scope.isImgUrl = async (url) => {
+          $scope.isImgUrl = (url) => {
             const img = new Image();
             img.src = url;
-            return await new Promise((resolve) => {
+            return new Promise((resolve) => {
               img.onerror = () => resolve(false);
               img.onload = () => resolve(true);
             });
@@ -82,26 +81,28 @@ export default app.directive('formio', function () {
 
           if ($scope.src || $scope.form) {
             $scope.initialized = true;
-            window.Formio.createForm($scope.element, $scope.src || $scope.form, _.cloneDeep($scope.options)).then(async (formio) => {
-              window.languages = { en: true };
+            window.Formio.createForm($scope.element, $scope.src || $scope.form, _.cloneDeep($scope.options)).then((formio) => {
+              window.languages = window.languages || { en: true };
 
-              window.setFormioLanguage = async function (lang, generics) {
-                $scope.$parent.$parent.vm.submission.data.currentLanguage = $scope.language;
+              window.setFormioLanguage = function (lang, generics) {
+                // $scope.$parent.$parent.vm.submission.data.currentLanguage = $scope.language;
+                $scope.submission.data.currentLanguage = $scope.language;
 
-                if (languages[lang]) {
+                if (window.languages[lang]) {
                   return formio.language = lang;
                 }
 
-                let resourceTranslations = await $scope.getResoruceTranslations($scope.language, formio.options.properties.template || null);
-                let translations = $scope.i18n[$scope.language] = Object.assign({}, generics, resourceTranslations);
+                $scope.getResoruceTranslations($scope.language, formio.options.properties.template || null).then((resourceTranslations) => {
+                  let translations = $scope.i18n[$scope.language] = Object.assign({}, generics, resourceTranslations);
 
-                if (Object.entries(translations).length === 0) {
-                  formio.language = 'en';
-                } else {
-                  formio.addLanguage(lang, translations);
-                  formio.language = lang;
-                  languages[lang] = true;
-                }
+                  if (Object.entries(translations).length === 0) {
+                    formio.language = 'en';
+                  } else {
+                    formio.addLanguage(lang, translations);
+                    formio.language = lang;
+                    window.languages[lang] = true;
+                  }
+                });
               }
 
               window.setFormioLanguage($scope.language, $scope.i18n[$scope.language]);
@@ -110,15 +111,15 @@ export default app.directive('formio', function () {
 
               formio.on('redraw', () => {
                 setTimeout(() => {
-                      let imgs = document.querySelectorAll('.formio-component.formio-component-file img'); 
-                      if (imgs.length) { 
-                        imgs.forEach((img, i) => {
-                          $scope.isImgUrl(img.src).then((status) => {
-                            if (!status) 
-                              img.src = '/images/file.png';
-                          })    
-                        });       
-                      }
+                  let imgs = document.querySelectorAll('.formio-component.formio-component-file img');
+                  if (imgs.length) {
+                    imgs.forEach((img, i) => {
+                      $scope.isImgUrl(img.src).then((status) => {
+                        if (!status)
+                          img.src = '/images/file.png';
+                      })
+                    });
+                  }
                 }, 1000);
               });
 

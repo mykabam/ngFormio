@@ -1,6 +1,6 @@
 {
   "name": "@mykabam/ng-formio",
-  "version": "4.16.3",
+  "version": "4.16.6-0",
   "description": "The form redering engine behind Form.IO.",
   "main": "dist/ng-formio.js",
   "scripts": {
