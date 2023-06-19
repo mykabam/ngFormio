@@ -1,4 +1,5 @@
 import { Formio } from 'formiojs';
+
 const app = angular.module('formio');
 export default app.directive('formio', function () {
   return {
@@ -64,10 +65,9 @@ export default app.directive('formio', function () {
               url += `&data.formTemplateName=${templateName}`;
             }
 
-            return Formio.fetch(url).then(function (resp) {
-              const result = resp.json();
-              return (result[0] && result[0].data && result[0].data.translations) || {};
-            });
+            return Formio.fetch(url)
+              .then((resp) => resp.json())
+              .then((result) => ((result[0] && result[0].data && result[0].data.translations) || {}));
           }
 
           $scope.isImgUrl = (url) => {
@@ -86,6 +86,9 @@ export default app.directive('formio', function () {
 
               window.setFormioLanguage = function (lang, generics) {
                 // $scope.$parent.$parent.vm.submission.data.currentLanguage = $scope.language;
+                if ($scope.submission == undefined) { $scope.submission = { data: {} } };
+                if (!$scope.submission.data == undefined) { $scope.submission.data = {} };
+                
                 $scope.submission.data.currentLanguage = $scope.language;
 
                 if (window.languages[lang]) {
