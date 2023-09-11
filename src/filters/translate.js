@@ -1,4 +1,5 @@
 import { Formio } from 'formiojs';
+
 const app = angular.module('formio');
 export default app.filter('formioTranslate', [
   '$filter',

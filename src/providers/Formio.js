@@ -32,12 +32,9 @@ app.config([
 export default app.provider('Formio', function () {
 
   window.FORMIO_SETTINGS &&
-    window.FORMIO_SETTINGS.base_url &&
-    Formio.setBaseUrl(window.FORMIO_SETTINGS.base_url);
-
-  window.FORMIO_SETTINGS &&
     window.FORMIO_SETTINGS.url &&
-    Formio.setProjectUrl(window.FORMIO_SETTINGS.url);
+    Formio.setProjectUrl(window.FORMIO_SETTINGS.url) &&
+    Formio.setBaseUrl(window.FORMIO_SETTINGS.url.slice(0, -1));
   
   // Return the provider interface.
   return {
