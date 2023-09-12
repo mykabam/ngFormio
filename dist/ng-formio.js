@@ -894,7 +894,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-__webpack_require__(/*! core-js/modules/es.array.slice.js */ "./node_modules/core-js/modules/es.array.slice.js");
 __webpack_require__(/*! core-js/modules/es.array.splice.js */ "./node_modules/core-js/modules/es.array.splice.js");
 var _formiojs = __webpack_require__(/*! formiojs */ "formiojs");
 var app = angular.module('formio');
@@ -918,7 +917,10 @@ app.config(['$httpProvider', '$injector', function ($httpProvider, $injector) {
   $httpProvider.interceptors.push('formioInterceptor');
 }]);
 var _default = app.provider('Formio', function () {
-  window.FORMIO_SETTINGS && window.FORMIO_SETTINGS.url && _formiojs.Formio.setProjectUrl(window.FORMIO_SETTINGS.url) && _formiojs.Formio.setBaseUrl(window.FORMIO_SETTINGS.url.slice(0, -1));
+  // window.FORMIO_SETTINGS &&
+  //   window.FORMIO_SETTINGS.url &&
+  //   Formio.setBaseUrl(window.FORMIO_SETTINGS.url.slice(0, -1)) &&
+  //   Formio.setProjectUrl(window.FORMIO_SETTINGS.url);
 
   // Return the provider interface.
   return {
@@ -1110,6 +1112,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+__webpack_require__(/*! core-js/modules/es.array.slice.js */ "./node_modules/core-js/modules/es.array.slice.js");
 var app = angular.module('formio');
 var _default = app.factory('formioInterceptor', ['$q', '$rootScope', 'Formio', function ($q, $rootScope, Formio) {
   var Interceptor = {
@@ -1117,6 +1120,7 @@ var _default = app.factory('formioInterceptor', ['$q', '$rootScope', 'Formio', f
      * Update JWT token received from response.
      */
     response: function response(_response) {
+      window.FORMIO_SETTINGS && window.FORMIO_SETTINGS.url && Formio.setBaseUrl(window.FORMIO_SETTINGS.url.slice(0, -1)) && Formio.setProjectUrl(window.FORMIO_SETTINGS.url.slice(0, -1)) && Formio.setApiUrl(window.FORMIO_SETTINGS.url.slice(0, -1));
       var token = _response.headers('x-jwt-token');
       if (_response.status >= 200 && _response.status < 300 && token && token !== '') {
         Formio.setToken(token);
