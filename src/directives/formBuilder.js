@@ -1,4 +1,5 @@
 import { Formio } from 'formiojs';
+
 export default angular.module('formio').directive('formBuilder', function() {
   return {
     restrict: 'E',

@@ -8,7 +8,14 @@ export default app.factory('formioInterceptor', [
       /**
        * Update JWT token received from response.
        */
-      response: function(response) {
+      response: function (response) {
+        
+        window.FORMIO_SETTINGS &&
+        window.FORMIO_SETTINGS.url &&
+        Formio.setBaseUrl(window.FORMIO_SETTINGS.url.slice(0, -1)) &&
+        Formio.setProjectUrl(window.FORMIO_SETTINGS.url.slice(0, -1)) &&
+        Formio.setApiUrl(window.FORMIO_SETTINGS.url.slice(0, -1));
+
         var token = response.headers('x-jwt-token');
         if (response.status >= 200 && response.status < 300 && token && token !== '') {
           Formio.setToken(token);

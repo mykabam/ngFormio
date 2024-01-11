@@ -82,7 +82,7 @@ export default app.directive('formio', function () {
           if ($scope.src || $scope.form) {
             $scope.initialized = true;
             window.Formio.createForm($scope.element, $scope.src || $scope.form, _.cloneDeep($scope.options)).then((formio) => {
-              window.languages = window.languages || { en: true };
+              window.languages = { en: true };
 
               window.setFormioLanguage = function (lang, generics) {
                 // $scope.$parent.$parent.vm.submission.data.currentLanguage = $scope.language;
