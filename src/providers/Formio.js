@@ -31,7 +31,7 @@ app.config([
 
 export default app.provider('Formio', function () {
   
-  Formio.GlobalFormio.cdn['flatpickr-formio'] = `${window.location.origin}/vendors/flatpickr`;
+  Formio.GlobalFormio.cdn['flatpickr-formio'] = `${window.location.origin}/assets/vendors/flatpickr`;
   
   // Return the provider interface.
   return {

@@ -917,7 +917,7 @@ app.config(['$httpProvider', '$injector', function ($httpProvider, $injector) {
   $httpProvider.interceptors.push('formioInterceptor');
 }]);
 var _default = app.provider('Formio', function () {
-  _formiojs.Formio.GlobalFormio.cdn['flatpickr-formio'] = "".concat(window.location.origin, "/vendors/flatpickr");
+  _formiojs.Formio.GlobalFormio.cdn['flatpickr-formio'] = "".concat(window.location.origin, "/assets/vendors/flatpickr");
 
   // Return the provider interface.
   return {
